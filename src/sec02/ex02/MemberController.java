@@ -66,13 +66,15 @@ public class MemberController extends HttpServlet{
 		response.setCharacterEncoding("text/html;charset=uft-8");
 		
 		//request 객체의 getPathInfo()메소드를 호출하여 클라이언트가 요청한 주소 URL정보를 얻는다.
-		String action = request.getPathInfo(); 
+		String action = request.getPathInfo(); 	//커맨드 패턴 
 		System.out.println(action);	//listMembers.do <---모든 회원정보 조회 요청주소 
 										//memberForm.do  <-회원가입 작성페이지 이동 요청주소 
 										// /addMembers.do <--DB에 입력한 회원정보 추가 요청 주소 
 										// /listMembers.do <--요청 주소 
 										// /modMemberForm.do <--회원정보 수정을 위해 먼저 ID에 해당하는 회원을 조회후 보여줘라는 주소 
 										// /modMember.do <-- 회원정보 수정 요청주소 
+										// /delMember.do <--- 회원정보 삭제 요청 주소 
+		
 		String nextPage = null; // <---- 뷰 경로를 저장할 변수 
 		
 		
@@ -137,6 +139,22 @@ public class MemberController extends HttpServlet{
 			//수정 후 DB로부터 모든회원정보를 검색하여 다시  회원목록창(listMembers.jsp)으로 이동하기 위해 
 			//DB로부터 모든회원정보를 검색하는 요청주소를 nextPage변수에 저장 
 			nextPage = "/member/listMembers.do"; //MemberController.java서블릿으로 재요청할 주소  (다시 서블릿으로 요청함) 재요청하면서 request영역은 유지가 됨 
+		
+		//삭제할 회원 ID를 SQL문으로 전달해 t_member테이블의 회원정보 삭제 요청이 들어 왔을때
+		}else if(action.equals("/delMember.do")) {
+			//삭제할 회원 ID얻기 
+			String id = request.getParameter("id");
+			
+			
+			//삭제할 회원 ID를 전달하여 DB에 저장된 회원정보 삭제 
+			memberDAO.delMember(id);
+			
+			//삭제 후 listMember.jsp로 삭제작업 완료 메세지를 전달하기 위해 
+			//응답할 메시지를 request에 저장 
+			request.setAttribute("msg", "deleted");
+			
+			//삭제 후 모든 회원을 다시 검색하기 위한 주소를 저장 
+			nextPage = "/member/listMembers.do";
 			
 		}
 		

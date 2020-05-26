@@ -32,6 +32,14 @@
 </style>
 
 <c:choose>
+	<%--회원 삭제에 성공 했다면 --%>
+	<c:when test='${msg=="deleted"}'>
+		<script type="text/javascript">
+			window.onload = function() {
+				alert("회원정보를 삭제했습니다.");
+			}		
+		</script>
+	</c:when>
 	<%--회원 추가에 성공했다면 --%>
 	<c:when test='${requestScope.msg == "addMember" }'>
 			<script type="text/javascript">
@@ -115,7 +123,7 @@
 			<td>${memberVO.name}</td>
 			<td>${memberVO.email}</td>
 			<td>${memberVO.joinDate}</td>
-			<%-- 수정, 삭제를 위해 회원의ID를 전ㄷ라해 수정과 삭제 요청을 합니다. --%>
+			<%-- 수정, 삭제를 위해 회원의ID를 전달해 수정과 삭제 요청을 합니다. --%>
 			<td><a href="${contextPath}/member/modMemberForm.do?id=${memberVO.id}">수정</a></td>
 			<td><a href="${contextPath}/member/delMember.do?id=${memberVO.id}">삭제</a></td>
 			

@@ -173,6 +173,36 @@ public class MemberDAO {
 		}//modMember메소드 끝
 		
 	}//MemberDAO클래스 끝 
+
+	//매개변수로 전달받은 삭제할 회원 id를 통해 회원삭제 
+	public void delMember(String id) {
+		//커넥션풀로부터 커넥션 빌려오기 
+	try {
+		conn = dataFactory.getConnection(); //DB연결 
+		//매개변수로 전달받은 ID에 해당하는 회원레코드 삭제 
+		String query = "delete from t_member where id=?";
+		
+		pstmt = conn.prepareStatement(query);
+		
+		//?값 설정 
+		pstmt.setString(1, id);
+		
+		//Delete실행 
+		pstmt.executeUpdate(); 
+		
+	}catch(Exception e) {
+		System.out.println("delMember메소드 내부에서 SQL실행 오류 :" + e);
+	}finally {
+		try {
+			if(pstmt != null) pstmt.close(); 
+			if(conn != null) conn.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
+	}
+		
+	}
 	
 	
 }//클래스 끝 
