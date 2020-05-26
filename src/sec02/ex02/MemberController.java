@@ -71,6 +71,8 @@ public class MemberController extends HttpServlet{
 										//memberForm.do  <-회원가입 작성페이지 이동 요청주소 
 										// /addMembers.do <--DB에 입력한 회원정보 추가 요청 주소 
 										// /listMembers.do <--요청 주소 
+										// /modMemberForm.do <--회원정보 수정을 위해 먼저 ID에 해당하는 회원을 조회후 보여줘라는 주소 
+										// /modMember.do <-- 회원정보 수정 요청주소 
 		String nextPage = null; // <---- 뷰 경로를 저장할 변수 
 		
 		
@@ -98,20 +100,51 @@ public class MemberController extends HttpServlet{
 			
 			//요청한 회원정보를 DB의 테이블에 INSERT하기 위한 메소드 호출 
 			memberDAO.addMember(memberVO);
-			
+			//회원추가에 성공했다면.. 성공메세지를 request에 저장 
+			request.setAttribute("msg", "addMember");
 			//DB에 회원 등록 후 다시 모든 회원정보를 검색요청(MemberController로) 위한 요청 주소를 저장 
 			nextPage = "/member/listMembers.do";
 	
 		}else if(action.equals("/memberForm.do")) {	
 			//회원가입창 화면 VIEW페이지 주소 설정 
 			nextPage = "/test03/memberForm.jsp";
+		//listMembers.jsp페이지에서 수정 링크를 클릭했을때..
+			//컨트롤러에 회원정보 수정창 요청시 ID로 회원정보를 조회한 후 수정창으로 포워딩합니다.
+		}else if(action.equals("/modMemberForm.do")) {
+			String id = request.getParameter("id");	//수정할 회원 id얻기 
+			//회원정보 수정창을 요청하면서 전송된 ID를 이용해 수정 전 회원정보를 검색해 옵니다.
+			MemberVO memInfo = memberDAO.findMember(id);
+			//request에 바인딩하여 회원정보 수정창에 수정하기 전의 회원정보를 전달합니다.
+			request.setAttribute("memInfo", memInfo);
+
+			//회원정보 수정창 페이지로 포워딩 하기 위한 URL지정 
+			nextPage = "/test03/modMemberForm.jsp";
+		//회원정보수정창(modMemberForm.jsp)에서 회원수정 정보를 입력후 수정하기 버튼을 클릭했을때...
+		//http://localhost:8090/pro13/member/modMember.do 주소로 
+			//DB테이블의 데이터 수정 요청이 들어오면.....
+		}else if(action.equals("/modMember.do")) {
+			//회원정보 수정창에서 수정시 입력한 정보를 가져온 후 
+			//수정할 회원정보를 MemberVO객체의 각변수에 저장 
+			MemberVO memberVO = new MemberVO(request.getParameter("id"), request.getParameter("pwd"), request.getParameter("name"), request.getParameter("email"));
+			
+			//DB의 회원 테이블의 데이터 수정 명령 
+			memberDAO.modMember(memberVO); //UPDATE구문 만들기 위해 전달 
+			
+			//회원정보 수정 후 회원목록창(listMembers.jsp)으로 수정작업 완료 메세지를 전달하기 위해
+			//request내장객체 영역에 완료 메세지를 저장(바인딩)함 
+			request.setAttribute("msg", "modified");
+			
+			//수정 후 DB로부터 모든회원정보를 검색하여 다시  회원목록창(listMembers.jsp)으로 이동하기 위해 
+			//DB로부터 모든회원정보를 검색하는 요청주소를 nextPage변수에 저장 
+			nextPage = "/member/listMembers.do"; //MemberController.java서블릿으로 재요청할 주소  (다시 서블릿으로 요청함) 재요청하면서 request영역은 유지가 됨 
+			
 		}
 		
 		//디스패치 방식으로 포워딩(재요청해서 이동) (view로) 
 		RequestDispatcher dispatche =
 				 request.getRequestDispatcher(nextPage);
 		
-		 dispatche.forward(request, response);
+		 dispatche.forward(request, response);	//dispatch방식이라 request영역은 유지가 됨 
 		
 		/*
 		 * //View(listMembers.jsp)페이지로 응답할 데이터(검색한 회원정보들 ArrayList)를 전달하여

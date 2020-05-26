@@ -30,8 +30,58 @@
 		text-align: center;
 	}
 </style>
+
+<c:choose>
+	<%--회원 추가에 성공했다면 --%>
+	<c:when test='${requestScope.msg == "addMember" }'>
+			<script type="text/javascript">
+				window.onload = function(){
+					window.alert("회원을 등록했습니다.");
+				}	
+			</script>
+	</c:when>
+</c:choose>	
+	<c:choose>
+		<%--수정에 성공했다면 --%>
+		<c:when test='${requestScope.msg == "modified" }'>
+		
+			<script type="text/javascript">
+				window.onload = function(){
+					window.alert("회원정보를 수정했습니다.");
+				}	
+			</script>
+		</c:when>	
+	</c:choose>
+<%
+
+	String msg = (String)request.getAttribute("msg");
+
+	if("modified".equals(msg)){
+%>
+
+		<script>
+			window.alert("회원정보를 수정했습니다.");
+		</script>	
+<% 	
+	}else if("addMember".equals(msg)){
+%>
+		<script>
+			window.alert("회원 등록했습니다.");
+		</script>
+<% 
+	}
+
+%>
+
 </head>
 <body>
+
+	<%-- 클라이언트가 웹 브라우저 주소창에 입력한 전체 주소중 .. 컨텍스트 경로 주소만 얻기 
+		http://localhost:8090/pro16/member/listMembers.do
+		/pro16 까지가 contextPath로 저장되어있음 
+	--%>
+	<c:set var="contextPath" value="${pageContext.request.contextPath }"/>
+	
 	<p class="cls1">회원정보</p>
 	<table border="1" align="center">
 		<tr align="center" bgcolor="lightgreen">
@@ -44,9 +94,14 @@
 			<td width="7%"><b>삭제</b></td>
 			
 		</tr>
+
+	
+	
+	
+
 <c:choose>
 	<%--request객체영역에 검색한 회원정보(ArrayList)가 존재하지 않으면? --%>	
-	<c:when test="${requestScope.membersList == null}">
+	<c:when test="${membersList == null}">
 		<tr>
 			<td colspan="5"><b>등록된 회원이 없습니다.</b></td>
 		</tr>
@@ -69,11 +124,6 @@
 	</c:when>
 </c:choose>
 	</table>
-	<%-- 클라이언트가 웹 브라우저 주소창에 입력한 전체 주소중 .. 컨텍스트 경로 주소만 얻기 
-		http://localhost:8090/pro16/member/listMembers.do
-		/pro16 까지가 contextPath로 저장되어있음 
-	--%>
-	<c:set var="contextPath" value="${pageContext.request.contextPath }"/>
 	
 	<a href="${contextPath}/member/memberForm.do">
 		<p class="cls2">회원가입하기</p>

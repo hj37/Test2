@@ -23,6 +23,18 @@ public class MemberDAO {
 	
 	//MemberDAO객체 생성시 생성자를 호출하게 되는데...
 	//생성자를 호출하면 DataSource커넥션풀을 얻는다.
+	
+	public void resourceClose() {
+		try {
+			if(rs != null) rs.close();
+			if(pstmt != null) pstmt.close(); 
+			if(conn != null) conn.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
+	}
+	
 	public MemberDAO() {
 		
 		try {
@@ -108,6 +120,59 @@ public class MemberDAO {
 			} 
 		}
 	}
+
+	//회원 id를 매개변수로 전달받아 회원 조회 
+	public MemberVO findMember(String id) {
+		//조회한 회원 한사람의 정보를 저장할 용도의 MemberVO객체를 담을 변수 선언 
+		MemberVO memInfo = null;
+		
+		try {
+			conn = dataFactory.getConnection();	//DB연결 
+			//매개변수로 전달 받은 id에 해당하는 회원레코드 검색 
+			String query = "select * from t_member where id=?";
+			pstmt = conn.prepareStatement(query);
+			pstmt.setString(1, id);
+			rs = pstmt.executeQuery();
+			
+			rs.next();
+			//검색한 회원 한줄의 정보를 얻어 MemberVO객체의 각 변수에 저장 
+			
+			memInfo = new MemberVO(rs.getString("id"), rs.getString("pwd"), rs.getString("name"), rs.getString("email"),rs.getDate("joinDate"));
+
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}finally {
+			resourceClose();
+		}
+		return memInfo;	//매개변수로 전달받은 회원 ID로 조회한 회원정보를 반환 
+	}
+
+	//매개변수로 전달받은 MemberVO객체(수정할 정보)를 이용하여 DB에 저장된 회원 레코드 수정 
+	public void modMember(MemberVO memberVO) {
+		
+		try {
+			//DB연결 
+			conn = dataFactory.getConnection();
+			
+			//UPDATE 구문 : 매개변수로 전달 받은 MemberVO객체의 각 변수에 저장된 정보를 이용하여 UPDATE구문 만들기 
+			String query = "update t_member set pwd=?, name=?, email=? where id=?";
+			//? 기호에 대응되는 값을 제외한 UPDATE전체 문장을 로딩한 OraclePreparedStatementWrapper객체 얻기 
+			pstmt = conn.prepareStatement(query);
+			//? 기호에 대응되는 수정할 값 설정 
+			pstmt.setString(1, memberVO.getPwd());
+			pstmt.setString(2, memberVO.getName());
+			pstmt.setString(3, memberVO.getEmail());
+			pstmt.setString(4, memberVO.getId());
+			//UPDATE전체 구문 DB에 전송하여 실행!
+			pstmt.executeUpdate();	
+		}catch(Exception e) {
+			e.printStackTrace(); //이클립스 콘솔창에 UPDATE실행 예외 출력 
+		}finally {
+			resourceClose();
+		}//modMember메소드 끝
+		
+	}//MemberDAO클래스 끝 
 	
 	
 }//클래스 끝 
