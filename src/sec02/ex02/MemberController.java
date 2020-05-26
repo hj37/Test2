@@ -83,7 +83,7 @@ public class MemberController extends HttpServlet{
 			request.setAttribute("membersList", membersList);
 			
 			//검색한 회원정보들(ArrayList)의 데이터들을 보여줄 VIEW페이지 주소 설정 
-			nextPage = "/test02/listMembers.jsp";
+			nextPage = "/test03/listMembers.jsp";
 			//DB에 입력한 회원정보를 추가 시켜줘 ~~라는 요청 주소를 받았을때..
 		}else if(action.equals("/addMember.do")) {
 		
@@ -104,7 +104,7 @@ public class MemberController extends HttpServlet{
 	
 		}else if(action.equals("/memberForm.do")) {	
 			//회원가입창 화면 VIEW페이지 주소 설정 
-			nextPage = "/test02/memberForm.jsp";
+			nextPage = "/test03/memberForm.jsp";
 		}
 		
 		//디스패치 방식으로 포워딩(재요청해서 이동) (view로) 

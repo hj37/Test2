@@ -22,7 +22,7 @@ import javax.servlet.http.HttpServletResponse;
 //3. memberForm.jsp에서 가입할 회원정보를 입력한 후 DB에 INSERT시켜줘 ~라는 요청 
 // http://localhost:8090/pro16/member/addMember.do로 요청 
 
-@WebServlet("/member/*")	//웹브라우저에게 요청시 두 단계로 요청이 이루어집니다.
+//@WebServlet("/member/*")	//웹브라우저에게 요청시 두 단계로 요청이 이루어집니다.
 
 public class MemberController extends HttpServlet{
 
